@@ -5,9 +5,17 @@ import { CatsModule } from './modules/cats/cats.module';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './modules/users/user.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
-  imports: [CatsModule, UserModule, ConfigModule.forRoot({ isGlobal: true })],
+  imports: [
+    CatsModule,
+    UserModule,
+    ConfigModule.forRoot({ isGlobal: true }),
+    MulterModule.register({
+      dest: './files',
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

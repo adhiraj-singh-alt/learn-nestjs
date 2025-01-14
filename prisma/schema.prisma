@@ -14,10 +14,17 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  uuid     String @unique @default(uuid()) @db.Uuid 
-  name     String
-  password String
+  id        Int      @id @default(autoincrement())
+  uuid      String   @unique @default(uuid()) @db.Uuid
+  name      String
+  password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Post {
+  id    Int    @id @default(autoincrement())
+  uuid  String @unique @default(uuid()) @db.Uuid
+  name  String
+  image String
 }
