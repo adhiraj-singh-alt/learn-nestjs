@@ -1,11 +1,11 @@
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CatsModule } from './modules/cats/cats.module';
-import { LoggerMiddleware } from './middlewares/logger.middleware';
+import { CatsModule } from '../cats/cats.module';
 import { ConfigModule } from '@nestjs/config';
-import { UserModule } from './modules/users/user.module';
+import { UserModule } from '../users/user.module';
 import { MulterModule } from '@nestjs/platform-express';
+import { LoggerMiddleware } from 'src/middlewares/logger.middleware';
 
 @Module({
   imports: [
@@ -13,7 +13,7 @@ import { MulterModule } from '@nestjs/platform-express';
     UserModule,
     ConfigModule.forRoot({ isGlobal: true }),
     MulterModule.register({
-      dest: './files',
+      dest: './uploads',
     }),
   ],
   controllers: [AppController],

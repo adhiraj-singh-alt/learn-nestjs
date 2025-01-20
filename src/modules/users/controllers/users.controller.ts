@@ -4,10 +4,8 @@ import {
   Controller,
   DefaultValuePipe,
   Delete,
-  FileTypeValidator,
   Get,
   Logger,
-  MaxFileSizeValidator,
   Param,
   ParseFilePipe,
   ParseIntPipe,
@@ -22,6 +20,8 @@ import { UUID } from 'crypto';
 import { UserService } from '../services/users.service';
 import { CreateUserDto, UpdateUserDto } from '../dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiOkResponse, ApiResponse } from '@nestjs/swagger';
+import { UserDto } from '../dto/user.dto';
 
 @Controller('users')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -29,11 +29,15 @@ export class UserController {
   private logger = new Logger('UserController');
   constructor(private readonly UserService: UserService) {}
 
+  @ApiOkResponse({
+    type: UserDto,
+    isArray: true,
+  })
   @Get()
   async getUsers(
-    @Query('page', new DefaultValuePipe(0), ParseIntPipe) page: number,
-    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
-    @Query('name') name: string,
+    @Query('page', new DefaultValuePipe(0), ParseIntPipe) page?: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit?: number,
+    @Query('name') name?: string,
   ) {
     this.logger.verbose(`getUsers filters - page-${page}, limit-${limit}, name-${name}`);
     return this.UserService.getUsers({
@@ -47,11 +51,17 @@ export class UserController {
     });
   }
 
+  @ApiOkResponse({
+    type: UserDto,
+  })
   @Get(':id')
   async getUserById(@Param('id', ParseUUIDPipe) id: UUID) {
     return this.UserService.getUserById(id);
   }
 
+  @ApiResponse({
+    type: UserDto,
+  })
   @Post()
   async createUser(@Body() userPayload: CreateUserDto) {
     return this.UserService.createUser(userPayload);
@@ -69,15 +79,8 @@ export class UserController {
 
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(
-    @UploadedFile(
-      new ParseFilePipe({
-        // validators: [new FileTypeValidator({ fileType: 'image/png' })],
-      }),
-    )
-    file: Express.Multer.File,
-  ) {
+  uploadFile(@UploadedFile(new ParseFilePipe({ fileIsRequired: false })) file: Express.Multer.File, @Body() body) {
     console.log(file);
-    return 'uploading file..';
+    console.log(body.name);
   }
 }
