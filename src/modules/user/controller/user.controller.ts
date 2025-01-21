@@ -17,7 +17,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { UUID } from 'crypto';
-import { UserService } from '../services/users.service';
+import { UserService } from '../service/user.service';
 import { CreateUserDto, UpdateUserDto } from '../dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOkResponse, ApiResponse } from '@nestjs/swagger';
@@ -37,9 +37,9 @@ export class UserController {
   async getUsers(
     @Query('page', new DefaultValuePipe(0), ParseIntPipe) page?: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit?: number,
-    @Query('name') name?: string,
+    @Query('username') username?: string,
   ) {
-    this.logger.verbose(`getUsers filters - page-${page}, limit-${limit}, name-${name}`);
+    this.logger.verbose(`getUsers filters - page-${page}, limit-${limit}, username-${username}`);
 
     console.log('Hiiasndklasndklnsakl ndlksa');
 
@@ -47,8 +47,8 @@ export class UserController {
       skip: page * limit,
       take: limit,
       where: {
-        name: {
-          contains: name,
+        username: {
+          contains: username,
         },
       },
     });
@@ -81,7 +81,7 @@ export class UserController {
   }
 
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file', { dest: './uploads' }))
   uploadFile(@UploadedFile(new ParseFilePipe({ fileIsRequired: false })) file: Express.Multer.File, @Body() body) {
     console.log(file);
     console.log(body.name);

@@ -1,9 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { UUID } from 'crypto';
-import { GLOBAL_ERROR_MESSAGE, userAPIConstants } from 'src/lib/constants';
+import { GLOBAL_ERROR_MESSAGE, userAPIConstants } from 'src/common/lib/constants';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
-import { hashPassword } from 'src/utils/utils';
+import { hashPassword } from 'src/common/utils/utils';
 
 @Injectable()
 export class UserService {
