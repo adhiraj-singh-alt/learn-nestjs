@@ -40,6 +40,9 @@ export class UserController {
     @Query('name') name?: string,
   ) {
     this.logger.verbose(`getUsers filters - page-${page}, limit-${limit}, name-${name}`);
+
+    
+
     return this.UserService.getUsers({
       skip: page * limit,
       take: limit,
@@ -80,7 +83,7 @@ export class UserController {
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(@UploadedFile(new ParseFilePipe({ fileIsRequired: false })) file: Express.Multer.File, @Body() body) {
-    console.log(file);
-    console.log(body.name);
+    
+    
   }
 }
