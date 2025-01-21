@@ -64,7 +64,6 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "node remove_console.ts",
       "prettier --write",
       "eslint --fix"
     ]
