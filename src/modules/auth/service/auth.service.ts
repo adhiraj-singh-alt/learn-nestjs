@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { UserService } from 'src/modules/user/service/user.service';
@@ -29,22 +29,34 @@ export class AuthService {
 
       if (!isPasswordValid) throw new BadRequestException('Password is incorrect');
 
-      return { accessToken: await this.JwtService.signAsync({ id: user.uuid, username: user.username }) };
+      return {
+        access_token: await this.JwtService.signAsync({ id: user.uuid, username: user.username, role: user.role }),
+        refresh_token: await this.JwtService.signAsync(
+          { id: user.uuid },
+          { secret: process.env.JWT_REFRESH_SECRET, expiresIn: process.env.JWT_REFRESH_TTL },
+        ),
+      };
     } catch (error) {
       throw new HttpException(error.message || GLOBAL_ERROR_MESSAGE, error.status || HttpStatus.BAD_REQUEST);
     }
   }
 
-  async signOut(id: number) {
-    return `This action returns a #${id} auth`;
-  }
+  async refreshToken(refreshToken: string) {
+    try {
+      console.log(refreshToken);
+      const { id } = this.JwtService.verify(refreshToken, {
+        secret: process.env.JWT_REFRESH_SECRET,
+      });
 
-  async refreshToken(token: string) {
-    console.log(token);
-    return `your are authenticated user`;
-  }
+      const user = await this.UserService.getUserById(id);
 
-  async check(id: number) {
-    return `This action removes a #${id} auth`;
+      if (!user) throw new NotFoundException('User not found');
+
+      const new_acces_token = await this.JwtService.signAsync({ id, username: user.username, role: user.role });
+
+      return { access_token: new_acces_token };
+    } catch (error) {
+      throw new HttpException(error.message || GLOBAL_ERROR_MESSAGE, error.status || HttpStatus.BAD_REQUEST);
+    }
   }
 }

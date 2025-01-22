@@ -13,6 +13,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -22,6 +23,7 @@ import { CreateUserDto, UpdateUserDto } from '../dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOkResponse, ApiResponse } from '@nestjs/swagger';
 import { UserDto } from '../dto/user.dto';
+import { Request } from 'express';
 
 @Controller('users')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -35,13 +37,12 @@ export class UserController {
   })
   @Get()
   async getUsers(
+    @Req() req: Request,
     @Query('page', new DefaultValuePipe(0), ParseIntPipe) page?: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit?: number,
     @Query('username') username?: string,
   ) {
     this.logger.verbose(`getUsers filters - page-${page}, limit-${limit}, username-${username}`);
-
-    console.log('Hiiasndklasndklnsakl ndlksa');
 
     return this.UserService.getUsers({
       skip: page * limit,

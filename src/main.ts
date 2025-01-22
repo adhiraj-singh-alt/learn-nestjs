@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const PORT = process.env.APP_PORT || 8080;
@@ -23,6 +24,8 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
+
+  app.use(cookieParser());
 
   await app.listen(PORT);
 
